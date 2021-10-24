@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="page-item" @click="ifshowCatalog">类别</div>
-            <div @click="choosePage(item-1)" class="page-item" :class="{'page-select':pageId==item-1}" v-for="item in pageNum">{{item}}
+            <div @click="choosePage(item-1)" class="page-item" :class="{'page-select':pageId==item-1}" v-for="(item,index) in pageNum" :key="index">{{item}}
             </div>
         </div>
     </div>
@@ -95,11 +95,9 @@ export default {
         getTag() {
             var list = this.$site.pages;
             list.forEach(element => {
-                var str = element.regularPath;
-                var taglist = str.split('/').reverse();
-                var l = decodeURIComponent(taglist[1]);
-                if (l != '') {
-                    this.tagList.push(l);
+                var tag = element.tag;
+                if (tag != undefined) {
+                    this.tagList.push(tag);
                 }
             })
             var arr = [];
