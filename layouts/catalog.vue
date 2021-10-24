@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="page-item" @click="ifshowCatalog">类别</div>
+            <div class="page-type" @click="ifshowCatalog">类别</div>
             <div @click="choosePage(item-1)" class="page-item" :class="{'page-select':pageId==item-1}" v-for="(item,index) in pageNum" :key="index">{{item}}
             </div>
         </div>
@@ -319,6 +319,17 @@ export default {
     justify-content flex-end;
     flex-wrap wrap;
 
+    .page-type{
+        width 30px;
+        background #c4deaa;
+        text-align center;
+        line-height 30px;
+        color white;
+        margin-bottom 5px;
+        cursor pointer;
+    }
+
+
     .page-item {
         width 30px;
         background #c3dae4;
@@ -328,6 +339,7 @@ export default {
         margin-bottom 5px;
         transition: all 1s;
         cursor pointer;
+        
 
         &:hover {
             height 50px;
