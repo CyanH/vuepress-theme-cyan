@@ -30,7 +30,7 @@ export default {
         getTag() {
             var list = this.$site.pages;
             list.forEach(element => {
-                var tag = element.tag;
+                var tag = element.tag || element.frontmatter.tag;
                 if (tag != undefined) {
                     this.tagList.push(tag);
                 }
