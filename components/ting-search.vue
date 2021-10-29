@@ -40,21 +40,6 @@ export default {
         }
     },
     methods: {
-        ajaxFun() {
-            $.ajax({
-                    url: 'http://localhost:3000/github?num=12&page=1', //跨域请求的地址，也可用相对路径js/data.js
-                    type: 'get',
-                    dataType: 'jsonp', //使用jsonp跨域请求
-                    jsonpCallback: 'callbackFunction'
-                })
-                .done((data) => {
-                    this.list = data;
-                    console.log(data)
-                })
-                .fail(function () {
-                    console.log("error");
-                });
-        },
         // 跳转页面
         searchLink(link) {
             this.$router.push(link).catch(err => {})
