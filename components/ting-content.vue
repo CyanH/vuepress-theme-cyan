@@ -298,6 +298,24 @@
             box-shadow: 0px 0px 10px #ececec;
             width:100%;
             display block;
+            object-fit: cover;
+        }
+    }
+    .pic-row{
+        text-align: center;
+        display: flex;
+
+        a{
+            position: relative;
+            width: 30%;
+            height: 0;
+            padding-bottom: 30%;
+            margin: 0 auto;
+
+            img{
+                height: 100%;
+                position: absolute;
+            }
         }
     }
     // catalog

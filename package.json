@@ -1,6 +1,6 @@
 {
   "name": "vuepress-theme-cyan",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "小清新看板娘主题,基于vuepress-theme-ting修改",
   "main": "index.js",
   "repository": "git@github.com:CyanH/vuepress-theme-cyan.git",
