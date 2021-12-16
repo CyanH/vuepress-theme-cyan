@@ -54,7 +54,6 @@ export default {
             pageId: 1,
             pageNum: null, //分页
             list: [],
-            nowList: [],
             everyPageNumber: 10, //每页多少个
             tagList: [],
             tags: [],
@@ -81,13 +80,6 @@ export default {
                     return element;
                 }
             })
-            if(this.list[0].lastUpdated){
-                this.list.sort((function (a, b) {
-                    var x = new Date(a['lastUpdated']).valueOf();
-                    var y = new Date(b['lastUpdated']).valueOf();
-                    return x > y ? -1 : x < y ? 1 : 0;
-                }))
-            }
         },
         goArticle(link) {
             this.$router.push(link)
@@ -122,6 +114,13 @@ export default {
             //获得所有文章
             var length = 0; //记录长度
             var pages = this.$site.pages;
+        
+            pages.sort((function (a, b) {
+                var x = a.frontmatter.index;
+                var y = b.frontmatter.index;
+                return x > y ? -1 : x < y ? 1 : 0;
+            }))
+            
             this.catalogList = pages.filter((element) => {
                 element.tag = element.frontmatter.tag
                 if (tagType == 'all') {
@@ -181,10 +180,6 @@ export default {
             background #c4deaa;
             border-radius 10px;
             transform translateX(-5px) translateY(12px)
-        }
-
-        &:nth-child(2n) {
-            // animation moveing infinite 15s alternate;
         }
 
         &:hover {

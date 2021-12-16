@@ -1,6 +1,6 @@
 <template>
     <div class="content-box">
-        <div class="content">
+        <div class="content"  v-if="!dialogVisible">
             <div class="catalog-item-big">
                     <div class="title">
                         {{nowTitle}}
@@ -28,15 +28,18 @@
             <div v-if="nextTitle.title" @click="goArticle(nextTitle)" class="levelTitle">下一篇：《{{nextTitle.title}}》</div>
         </div>
         <img v-if="showTop" @click="backTop" class="top" src="../public/icon/top.png">
+        <cyan-dialog v-if="dialogVisible" @entry="handleEntry"/>
     </div>
 </template>
 
 <script>
     import tingGitalk from "../components/ting-gitalk.vue";
+    import cyanDialog from "../components/cyan-dialog.vue";
     import $ from 'jquery'
     export default {
         components: {
-            tingGitalk
+            tingGitalk,
+            cyanDialog
         },
         data() {
             return {
@@ -49,13 +52,14 @@
                 nextTitle:{},
                 nowTitle:null,
                 titleIndex:0,
+                dialogVisible: false
             }
         },
         watch:{
             nowPosition(val){
                 this.showTop = val >= 200 ? true : false;
             },
-            titleIndex(val){
+            titleIndex(){
                 this.init();
             }
         },
@@ -140,16 +144,23 @@
                  this.nowTitle=item.title;
                 this.$router.push(item.path);
             },
+            handleEntry(){
+                this.clickTitle();
+                this.scrollTitle();
+                this.styleOperation();
+                if (this.$page.frontmatter.showMessage==false) {
+                    this.showMessage = this.$page.frontmatter.showMessage
+                }
+                this.nowTitle=this.$page.title;
+                this.init();
+            }
         },
         mounted() {
-            this.clickTitle();
-            this.scrollTitle();
-            this.styleOperation();
-            if (this.$page.frontmatter.showMessage==false) {
-                this.showMessage = this.$page.frontmatter.showMessage
+            if(this.$page.frontmatter.tag === '悄悄话'){
+                this.dialogVisible = true
+                return
             }
-            this.nowTitle=this.$page.title;
-            this.init();
+            this.handleEntry()
         }
     }
 </script>
