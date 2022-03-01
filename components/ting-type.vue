@@ -30,11 +30,9 @@ export default {
         getTag() {
             var list = this.$site.pages;
             list.forEach(element => {
-                var str = element.regularPath;
-                var taglist = str.split('/').reverse();
-                var l = decodeURIComponent(taglist[1]);
-                if (l != '') {
-                    this.tagList.push(l);
+                var tag = element.tag || element.frontmatter.tag;
+                if (tag != undefined) {
+                    this.tagList.push(tag);
                 }
             })
             var arr = [];
@@ -53,26 +51,6 @@ export default {
                 i += count;
             }
             this.tags = arr;
-        },
-        ajaxFun() {
-            $.ajax({
-                    url: 'http://localhost:3000/github?num=12&page=1', //跨域请求的地址，也可用相对路径js/data.js
-                    type: 'get',
-                    dataType: 'jsonp', //使用jsonp跨域请求
-                    jsonpCallback: 'callbackFunction'
-                })
-                .done((data) => {
-                    this.list = data;
-                    console.log(data)
-                })
-                .fail(function () {
-                    console.log("error");
-                });
-        },
-        // 跳转页面
-        searchLink(link) {
-            this.$router.push(link).catch(err => {})
-            this.searchKey = null;
         },
     },
     mounted() {
