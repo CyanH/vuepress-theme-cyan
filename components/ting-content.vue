@@ -407,7 +407,6 @@
     }
     }
     a {
-        display: block;
         color: #2c3e50;
     }
     a:hover {
