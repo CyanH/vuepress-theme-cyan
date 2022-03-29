@@ -1,168 +1,185 @@
 <template>
     <div class="content-box">
-        <div class="content"  v-if="!dialogVisible">
+        <div class="content" v-if="!dialogVisible">
             <div class="catalog-item-big">
-                    <div class="title">
-                        {{nowTitle}}
-                    </div>
-                    <div class="article-time">
-                        {{$page.lastUpdated}}
-                    </div>
+                <div class="title">{{ nowTitle }}</div>
+                <div class="article-time">{{ $page.lastUpdated }}</div>
             </div>
             <!--内容-->
-            <Content/>
-            <div v-if="showCatalog&&preTitle.title" @click="goArticle(preTitle)" class="phone-pre">上一篇：《{{preTitle.title}}》</div>
-            <div v-if="showCatalog&&nextTitle.title" @click="goArticle(nextTitle)" class="phone-next">下一篇：《{{nextTitle.title}}》</div>
+            <Content />
+            <div
+                v-if="showCatalog && preTitle.title"
+                @click="goArticle(preTitle)"
+                class="phone-pre"
+            >上一篇：《{{ preTitle.title }}》</div>
+            <div
+                v-if="showCatalog && nextTitle.title"
+                @click="goArticle(nextTitle)"
+                class="phone-next"
+            >下一篇：《{{ nextTitle.title }}》</div>
             <div class="over" v-if="showMessage">
                 完
                 <div class="block"></div>
             </div>
-            <tingGitalk v-if="showMessage"/>
+            <tingGitalk v-if="showMessage" />
         </div>
-        <div class="catalog " v-if="showMessage">
+        <div class="catalog" v-if="showMessage">
             <!-- 标题-->
-            <div v-if="preTitle.title" @click="goArticle(preTitle)" class="levelTitle">上一篇:《{{preTitle.title}}》</div>
-            <div class="level1">{{nowTitle}}</div>
-            <a :class="[item.level==2?'level2':'level3',{'select':item.slug==selectTitle}]"
-               v-for="(item,index) in $page.headers" :key="index" :href="'#'+item.slug" nofollow>{{item.title}}</a>
-            <div v-if="nextTitle.title" @click="goArticle(nextTitle)" class="levelTitle">下一篇：《{{nextTitle.title}}》</div>
+            <div
+                v-if="preTitle.title"
+                @click="goArticle(preTitle)"
+                class="levelTitle"
+            >上一篇:《{{ preTitle.title }}》</div>
+            <div class="level1">{{ nowTitle }}</div>
+            <a
+                :class="[item.level == 2 ? 'level2' : 'level3', { 'select': item.slug == selectTitle }]"
+                v-for="(item, index) in $page.headers"
+                :key="index"
+                :href="'#' + item.slug"
+                nofollow
+            >{{ item.title }}</a>
+            <div
+                v-if="nextTitle.title"
+                @click="goArticle(nextTitle)"
+                class="levelTitle"
+            >下一篇：《{{ nextTitle.title }}》</div>
         </div>
-        <img v-if="showTop" @click="backTop" class="top" src="../public/icon/top.png">
-        <cyan-dialog v-if="dialogVisible" @entry="handleEntry"/>
+        <img v-if="showTop" @click="backTop" class="top" src="../public/icon/top.png" />
+        <cyan-dialog v-if="dialogVisible" @entry="handleEntry" />
     </div>
 </template>
 
 <script>
-    import tingGitalk from "../components/ting-gitalk.vue";
-    import cyanDialog from "../components/cyan-dialog.vue";
-    import $ from 'jquery'
-    export default {
-        components: {
-            tingGitalk,
-            cyanDialog
-        },
-        data() {
-            return {
-                showMessage: true,
-                positionList: [],//锚点
-                selectTitle: '',
-                showTop: false,
-                nowPosition:0,
-                preTitle:{},
-                nextTitle:{},
-                nowTitle:null,
-                titleIndex:0,
-                dialogVisible: false
-            }
-        },
-        watch:{
-            nowPosition(val){
-                this.showTop = val >= 200 ? true : false;
-            },
-            titleIndex(){
-                this.init();
-            }
-        },
-        computed:{
-            showCatalog(){
-                if(this.$page.path=='/'){
-                    return false
-                }else{
-                    return true
-                }
-            }
-        },
-        methods: {
-            // 点击a以后获得改变的hash路由
-            clickTitle() {
-                window.onhashchange = (e) => {
-                    this.selectTitle = decodeURIComponent(location.hash).replace('#', '');
-                };
-            },
-            // 路由随鼠标滚动而改变，对应标题列表改变样式
-            scrollTitle() {
-                var list = $('.header-anchor');
-                this.positionList = this.positionList.concat(list);
-                window.onscroll = () => {
-                    var position = document.scrollingElement.scrollTop ;
-                    this.nowPosition=position;
-                    var small = 100;
-                    var titleId;
-                    // 滚动，url变化
-                    for (var i = 0; i < this.positionList[0].length; i++) {
-                        var now = this.positionList[0][i].offsetTop;
-                        if (Math.abs(now - position) < small) {
-                            titleId = i;
-                            small = Math.abs(now - position)
-                        }
-                    }
-                    if (titleId >= 0) {
-                        this.selectTitle = decodeURIComponent(this.positionList[0][titleId].hash).replace('#', '');
-                        window.history.replaceState({}, " ", this.positionList[0][titleId]);
-                    }
-                }
-            },
-            styleOperation() {
-                var allTitle = document.getElementsByClassName('header-anchor')
-                for (var i = 0; i < allTitle.length; i++) {
-                    allTitle[i].innerHTML = ' '
-                }
-            },
-            backTop() {
-                document.scrollingElement.scrollTop = 0;
-            },
-            init() {
-                //获得所有文章
-                var pages = this.$site.pages;
-                this.preTitle={};
-                this.nextTitle={};
-                if(pages.length==1){
-                    return;
-                }else{
-                    for (let i = 0; i < pages.length; i++) {
-                        if(this.nowTitle==pages[i].title){
-                            this.titleIndex=i;
-                            break;
-                        }
-                    }
-                    if(this.titleIndex==0){
-                        this.nextTitle=pages[this.titleIndex+1];
-                        this.nextTitle.index=this.titleIndex+1;
-                    }else if(this.titleIndex==pages.length-1){
-                        this.preTitle=pages[this.titleIndex-1];
-                        this.preTitle.index=this.titleIndex-1;
-                    }else{
-                        this.nextTitle=pages[this.titleIndex+1];
-                        this.preTitle=pages[this.titleIndex-1];
-                        this.nextTitle.index=this.titleIndex+1;
-                        this.preTitle.index=this.titleIndex-1;
-                        }
-                }
-            },
-              goArticle(item) {
-                this.titleIndex=item.index;
-                 this.nowTitle=item.title;
-                this.$router.push(item.path);
-            },
-            handleEntry(){
-                this.clickTitle();
-                this.scrollTitle();
-                this.styleOperation();
-                if (this.$page.frontmatter.showMessage==false) {
-                    this.showMessage = this.$page.frontmatter.showMessage
-                }
-                this.nowTitle=this.$page.title;
-                this.init();
-            }
-        },
-        mounted() {
-            if(this.$page.frontmatter.tag === '悄悄话'){
-                this.dialogVisible = true
-                return
-            }
-            this.handleEntry()
+import tingGitalk from "../components/ting-gitalk.vue";
+import cyanDialog from "../components/cyan-dialog.vue";
+import $ from 'jquery'
+export default {
+    components: {
+        tingGitalk,
+        cyanDialog
+    },
+    data() {
+        return {
+            showMessage: true,
+            positionList: [],//锚点
+            selectTitle: '',
+            showTop: false,
+            nowPosition: 0,
+            preTitle: {},
+            nextTitle: {},
+            nowTitle: null,
+            titleIndex: 0,
+            dialogVisible: false
         }
+    },
+    watch: {
+        nowPosition(val) {
+            this.showTop = val >= 200 ? true : false;
+        },
+        titleIndex() {
+            this.init();
+        }
+    },
+    computed: {
+        showCatalog() {
+            if (this.$page.path == '/') {
+                return false
+            } else {
+                return true
+            }
+        }
+    },
+    methods: {
+        // 点击a以后获得改变的hash路由
+        clickTitle() {
+            window.onhashchange = (e) => {
+                this.selectTitle = decodeURIComponent(location.hash).replace('#', '');
+            };
+        },
+        // 路由随鼠标滚动而改变，对应标题列表改变样式
+        scrollTitle() {
+            var list = $('.header-anchor');
+            this.positionList = this.positionList.concat(list);
+            window.onscroll = () => {
+                var position = document.scrollingElement.scrollTop;
+                this.nowPosition = position;
+                var small = 100;
+                var titleId;
+                // 滚动，url变化
+                for (var i = 0; i < this.positionList[0].length; i++) {
+                    var now = this.positionList[0][i].offsetTop;
+                    if (Math.abs(now - position) < small) {
+                        titleId = i;
+                        small = Math.abs(now - position)
+                    }
+                }
+                if (titleId >= 0) {
+                    this.selectTitle = decodeURIComponent(this.positionList[0][titleId].hash).replace('#', '');
+                    window.history.replaceState({}, " ", this.positionList[0][titleId]);
+                }
+            }
+        },
+        styleOperation() {
+            var allTitle = document.getElementsByClassName('header-anchor')
+            for (var i = 0; i < allTitle.length; i++) {
+                allTitle[i].innerHTML = ' '
+            }
+        },
+        backTop() {
+            document.scrollingElement.scrollTop = 0;
+        },
+        init() {
+            //获得所有文章
+            var pages = this.$site.pages;
+            this.preTitle = {};
+            this.nextTitle = {};
+            if (pages.length == 1) {
+                return;
+            } else {
+                for (let i = 0; i < pages.length; i++) {
+                    if (this.nowTitle == pages[i].title) {
+                        this.titleIndex = i;
+                        break;
+                    }
+                }
+                if (this.titleIndex == 0) {
+                    this.nextTitle = pages[this.titleIndex + 1];
+                    this.nextTitle.index = this.titleIndex + 1;
+                } else if (this.titleIndex == pages.length - 1) {
+                    this.preTitle = pages[this.titleIndex - 1];
+                    this.preTitle.index = this.titleIndex - 1;
+                } else {
+                    this.nextTitle = pages[this.titleIndex + 1];
+                    this.preTitle = pages[this.titleIndex - 1];
+                    this.nextTitle.index = this.titleIndex + 1;
+                    this.preTitle.index = this.titleIndex - 1;
+                }
+            }
+        },
+        goArticle(item) {
+            this.titleIndex = item.index;
+            this.nowTitle = item.title;
+            this.$router.push(item.path);
+        },
+        handleEntry() {
+            this.clickTitle();
+            this.scrollTitle();
+            this.styleOperation();
+            if (this.$page.frontmatter.showMessage == false) {
+                this.showMessage = this.$page.frontmatter.showMessage
+            }
+            this.nowTitle = this.$page.title;
+            this.init();
+        }
+    },
+    mounted() {
+        if (this.$page.frontmatter.tag === '悄悄话') {
+            this.dialogVisible = true
+            return
+        }
+        this.handleEntry()
     }
+}
 </script>
 
 <style lang="stylus">
@@ -334,6 +351,7 @@
         a{
             color rgba(0,0,0,.75);
             margin 10px 0;
+            display block;
         }
         position fixed;
         margin auto;
