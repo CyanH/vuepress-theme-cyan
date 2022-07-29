@@ -20,7 +20,7 @@ export default {
     },
     data() {
         return {
-            headImg: "https://yating.online/res/img/yating.jpg",
+            headImg: "",
             navLinkList: [],
         }
     },
