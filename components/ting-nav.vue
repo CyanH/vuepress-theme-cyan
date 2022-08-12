@@ -76,10 +76,9 @@ export default {
                 overflow: hidden;
                 writing-mode: vertical-lr;
                 /*从左向右 从右向左是 writing-mode: vertical-rl;*/
-                writing-mode: tb-lr;
                 text-decoration: none;
                 font-weight bold;
-                out-line: none;
+                outline: none;
                 color #fff;
                 text-shadow 1px 1px #000;
 
